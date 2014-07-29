@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Places</h1>
+<h1>Hi {{user.nickname}}! These are your places:</h1>
     {% for place in places %}
-    <h3>{{place.name}}</h3>
+    <h3>--{{place.place_name}}--</h3>
     <p>
-    Where:  {{place.name}}<br />
-    Opened: {{place.open}}</p>
+    Where:  {{place.place_name}}<br />
+    Open: {{place.available}}</p>
     {% endfor %}
 {% endblock %}

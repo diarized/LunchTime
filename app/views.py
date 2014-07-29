@@ -1,23 +1,35 @@
 # vim: set fileencoding=utf-8 :
 
+
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
 from forms import LoginForm
 from models import User
 
+
 @lm.user_loader
 def load_user(email):
     return User.query.get(email)
+
 
 @app.before_request
 def before_request():
     g.user = current_user
 
+
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
+    user = g.user
+    return render_template('index.html',
+                            title='Home',
+                           place={'place_name': u'Chińczyk', 'available': True},
+                            user=user)
+
+
+def places():
     user = g.user
     places = [
         {'place_name': u'Chińczyk', 'available': True},
@@ -27,6 +39,7 @@ def index():
                             title='Places',
                             places=places,
                             user=user)
+
 
 @app.route('/login', methods = ['GET', 'POST'])
 @oid.loginhandler
@@ -81,6 +94,7 @@ def after_login(resp):
         session.pop('remember_me', None)
     login_user(user, remember=remember_me)
     return redirect(request.args.get('next') or url_for('index'))
+
 
 @app.route('/logout')
 def logout():

@@ -1,0 +1,12 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Hi, {{user.nickname}}!</h1>
+Today you eat at {{place.place_name}}. You ordered:
+<ol>
+{% for meal in ordered_meals %}
+<li>{{meal}}</li>
+</ol>
+{% endfor %}
+{% endblock %}

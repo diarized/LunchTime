@@ -2,9 +2,9 @@ from app import db
 
 
 class User(db.Model):
-    email = db.Column(db.String(120), primary_key=True)
-    nickname = db.Column(db.String(64), unique = True)
-    posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')
+    id = db.Column(db.Integer, primary_key=True)
+    nickname = db.Column(db.String(64), unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
 
     def is_authenticated(self):
         return True
@@ -16,7 +16,10 @@ class User(db.Model):
         return False
 
     def get_id(self):
-        return unicode(self.email)
+        return unicode(self.id)
+
+    def __repr__(self):
+        return "<User %r>" % (self.nickname)
 
 
 class Place(db.Model):
@@ -24,7 +27,7 @@ class Place(db.Model):
     available = db.Column(db.Boolean)
 
     def __repr__(self):
-        return "<Place %r>" % (self.name)
+        return "<Place %r>" % (self.place_name)
 
 
 class Meal(db.Model):
