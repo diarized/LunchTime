@@ -25,10 +25,12 @@ def index():
     user = g.user
     return render_template('index.html',
                             title='Home',
-                           place={'place_name': u'Chińczyk', 'available': True},
+                            place={'place_name': u'Chińczyk', 'available': True},
                             user=user)
 
 
+@app.route('/places')
+@login_required
 def places():
     user = g.user
     places = [
@@ -57,6 +59,7 @@ def login():
 
 
 @app.route('/orders')
+@login_required
 def orders():
     #orders = db.get_orders()
     orders = [
@@ -68,6 +71,22 @@ def orders():
     ]
     return render_template('orders.html',
                            orders=orders)
+
+
+@app.route('/user/<nickname>')
+@login_required
+def user(nickname):
+    user = User.query.filter_by(nickname = nickname).first()
+    if user == None:
+        flash('User ' + nickname + ' not found.')
+        return redirect(url_for('index'))
+    ordered_meals = [
+        { 'owner': user, 'place_name': 'Troll', 'meal_name': u'Trollowa zupa ryżowa' },
+        { 'owner': user, 'place_name': 'Troll', 'meal_name': u'Kurczak pięć smaków' }
+    ]
+    return render_template('user.html',
+        user=user,
+        ordered_meals=ordered_meals)
 
 
 @app.before_request
