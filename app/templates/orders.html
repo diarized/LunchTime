@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Orders</h1>
+    {% for order in orders %}
+    <h3>Order no {{order.number}}</h3>
+    <p>
+    Created: {{order.created}}<br />
+    Ends:    {{order.ends}}<br />
+    Where:   {{order.place}}</p>
+    {% endfor %}
+{% endblock %}
