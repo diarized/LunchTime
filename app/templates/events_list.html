@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Events</h1>
+    <ul>
+    {% for event in events %}
+    <li>Event at <b>{{event.place}}</b> expires at <b>{{event.expires}}</b> (created by {{event.owner}})</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

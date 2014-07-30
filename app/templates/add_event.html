@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Today events</h1>
+<form action="" method="post" name="add_event">
+    {{form.hidden_tag()}}
+    <p>
+        Name of the place:<br />
+        {{form.place_name(size=80)}}<br />
+    </p>
+    <p>Expires at {{form.expires(size=10)}}</p>
+    <p><input type="submit" value="Broadcast"></p>
+</form>
+{% endblock %}
+

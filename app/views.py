@@ -4,8 +4,10 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from forms import LoginForm
-from models import User
+from forms import LoginForm, NewEventForm
+from models import User, Event
+import time
+import datetime
 
 
 @lm.user_loader
@@ -61,8 +63,8 @@ def login():
 @app.route('/orders')
 @login_required
 def orders():
-#    if g.user is not None and g.user.is_authenticated():
-#        return redirect(url_for('login'))
+    if g.user is None or not g.user.is_authenticated():
+        return redirect(url_for('login'))
     orders = [
         { 'number' : '123',
           'created': '2014-07-22 10:28',
@@ -72,6 +74,32 @@ def orders():
     ]
     return render_template('orders.html',
                            orders=orders)
+
+
+@app.route('/events/add', methods=['GET', 'POST'])
+@login_required
+def add_event():
+    if g.user is None or not g.user.is_authenticated():
+        return redirect(url_for('login'))
+    form = NewEventForm()
+    if form.validate_on_submit():
+        now = [x for x in time.localtime()]
+        exp_h, exp_m = [int(x) for x in form.expires.data.split(':')]
+        event = Event(
+            owner=g.user.nickname,
+            place=form.place_name.data,
+            created=datetime.datetime.now(),
+            expires=datetime.datetime(now[0], now[1], now[2], exp_h, exp_m))
+        db.session.add(event)
+        db.session.commit()
+        return redirect(url_for('events_list'))
+    return render_template('add_event.html', form=form)
+
+
+@app.route('/events/get')
+def events_list():
+    events = Event.query.all()
+    return render_template('events_list.html', events=events)
 
 
 @app.route('/user/<nickname>')
