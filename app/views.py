@@ -61,7 +61,8 @@ def login():
 @app.route('/orders')
 @login_required
 def orders():
-    #orders = db.get_orders()
+#    if g.user is not None and g.user.is_authenticated():
+#        return redirect(url_for('login'))
     orders = [
         { 'number' : '123',
           'created': '2014-07-22 10:28',
@@ -101,9 +102,7 @@ def after_login(resp):
         return redirect(url_for('login'))
     user = User.query.filter_by(email=resp.email).first()
     if user is None:
-        nickname = resp.nickname
-        if nickname is None or nickname == "":
-            nickname = resp.email.split('@')[0]
+        nickname = resp.email.split('@')[0]
         user = User(email=resp.email, nickname=nickname)
         db.session.add(user)
         db.session.commit()
@@ -119,3 +118,15 @@ def after_login(resp):
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
