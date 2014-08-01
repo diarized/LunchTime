@@ -5,9 +5,9 @@ from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
 from forms import LoginForm, NewEventForm
-from models import User, Event
-import time
+from models import User, Event, Place
 import datetime
+from dateutil import parser as timeparser
 
 
 @lm.user_loader
@@ -82,14 +82,15 @@ def add_event():
     if g.user is None or not g.user.is_authenticated():
         return redirect(url_for('login'))
     form = NewEventForm()
+    places = [x.place_name for x in Place.query.filter_by(available=True)]
+    form.place_name.choices = zip(xrange(len(places)), places)
     if form.validate_on_submit():
-        now = [x for x in time.localtime()]
-        exp_h, exp_m = [int(x) for x in form.expires.data.split(':')]
         event = Event(
             owner=g.user.nickname,
             place=form.place_name.data,
             created=datetime.datetime.now(),
-            expires=datetime.datetime(now[0], now[1], now[2], exp_h, exp_m))
+            expires=timeparser.parse(form.expires.data),
+        )
         db.session.add(event)
         db.session.commit()
         return redirect(url_for('events_list'))
@@ -116,11 +117,6 @@ def user(nickname):
     return render_template('user.html',
         user=user,
         ordered_meals=ordered_meals)
-
-
-@app.before_request
-def before_request():
-    g.user = current_user
 
 
 @oid.after_login
