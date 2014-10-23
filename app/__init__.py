@@ -3,19 +3,23 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
+from flask_debugtoolbar import DebugToolbarExtension
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 
 
 app = Flask(__name__)
 app.config.from_object('config')
+app.debug = True
 db = SQLAlchemy(app)
 
 lm = LoginManager()
 lm.init_app(app)
 lm.login_view = '/login'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
+toolbar = DebugToolbarExtension(app)
 
 from app import views, models
+
 if not app.debug:
     import logging
     from logging.handlers import SMTPHandler
