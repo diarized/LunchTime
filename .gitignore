@@ -54,3 +54,6 @@ docs/_build/
 
 # SQLite3 files
 *.db
+
+# Backup files
+*.bak
